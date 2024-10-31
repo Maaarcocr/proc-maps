@@ -184,7 +184,7 @@ pub struct DyldInfo {
 /// Returns basic information on modules loaded up by dyld. This lets
 /// us get the filename/address of the system Ruby or Python frameworks for instance.
 /// (which won't appear as a separate entry in vm_regions returned by get_process_maps)
-pub fn get_dyld_info(pid: Pid) -> io::Result<Vec<DyldInfo>> {
+pub fn get_dyld_info(task: u32) -> io::Result<Vec<DyldInfo>> {
     // Adapted from :
     // https://stackoverflow.com/questions/4309117/determining-programmatically-what-modules-are-loaded-in-another-process-os-x
     // https://blog.lse.epita.fr/articles/82-playing-with-mach-os-and-dyld.html
@@ -196,7 +196,6 @@ pub fn get_dyld_info(pid: Pid) -> io::Result<Vec<DyldInfo>> {
     use mach2::task_info::{task_info_t, TASK_DYLD_INFO};
 
     let mut vec = Vec::new();
-    let task = task_for_pid(pid)?;
 
     // Note: this seems to require macOS MAC_OS_X_VERSION_10_6 or greater
     // https://chromium.googlesource.com/breakpad/breakpad/+/master/src/client/mac/handler/dynamic_images.cc#388
